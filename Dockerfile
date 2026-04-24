@@ -7,7 +7,8 @@ RUN apk add --update --no-cache --virtual build-deps \
     git \
     libtool \
     automake \
-    autoconf
+    autoconf \
+    openssl
 
 # Add libvips
 RUN apk add --upgrade --no-cache vips-dev build-base --repository https://alpine.global.ssl.fastly.net/alpine/v3.10/community/
