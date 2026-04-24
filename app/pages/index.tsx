@@ -58,6 +58,7 @@ const Home: BlitzPage = () => {
         </div>
         <p>
           <strong>{hello}</strong>
+          <strong>strong2</strong>
         </p>
         <div className={classes.buttonContainer}>
           <UserInfo />
