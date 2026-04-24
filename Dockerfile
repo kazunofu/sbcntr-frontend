@@ -40,8 +40,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/db ./
 
-ENV PORT 80
-EXPOSE 80
+ENV PORT 8080
+EXPOSE 8080
 
 CMD [ "npm","run","start:prd" ]
 # HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl

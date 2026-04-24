@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "npx blitz dev --port 3100",
     "start": "npx blitz start --port 3100",
-    "start:prd": "npx blitz start --port 80",
+    "start:prd": "npx blitz start --port 8080",
     "studio": "npx blitz console",
     "build": "npx blitz build",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx .",

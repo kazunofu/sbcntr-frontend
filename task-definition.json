@@ -1,0 +1,43 @@
+{
+  "family": "sbcntr-frontend-app",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::069661031563:role/ecsTaskExecutionRole",
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "069661031563.dkr.ecr.ap-northeast-1.amazonaws.com/sbcntr-frontend-app:latest",
+      "essential": true,
+      "memoryReservation": 512,
+      "readonlyRootFilesystem": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "name": "app-8080-tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [
+        { "name": "BACKEND_FQDN", "value": "backend-app.sbcntr.local" },
+        { "name": "BACKEND_PORT", "value": "8081" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/sbcntr/ecs/frontend-app",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
