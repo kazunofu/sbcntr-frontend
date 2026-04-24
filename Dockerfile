@@ -1,19 +1,19 @@
-FROM node:14.16.0-alpine3.13 AS builder
-RUN apk add --no-cache libc6-compat gcompat
+FROM node:14.21.3-bullseye-slim AS builder
 WORKDIR /app
-RUN apk add --update --no-cache --virtual build-deps \
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     g++ \
+    make \
     git \
     libtool \
     automake \
     autoconf \
-    openssl
+    openssl \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Add libvips
-RUN apk add --upgrade --no-cache vips-dev build-base --repository https://alpine.global.ssl.fastly.net/alpine/v3.10/community/
-
-# yarn.lock と package.json だけ先にコピーしてキャッシュを活用する
+# package.json と yarn.lock だけ先にコピーしてキャッシュを活用する
 COPY package.json yarn.lock ./
 
 # install all dependencies including devDependencies
@@ -30,12 +30,14 @@ RUN yarn install --pure-lockfile --production && cp -R node_modules /tmp/node_mo
 RUN yarn build
 
 ###########
-FROM node:14.16.0-alpine3.13
+FROM node:14.21.3-bullseye-slim
 WORKDIR /app
 
-RUN apk add --no-cache curl tzdata && \
-    cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-    apk del tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    tzdata \
+    && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /tmp/node_modules ./node_modules
 COPY --from=builder /app/.blitz ./.blitz
@@ -43,8 +45,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/db ./
 
-ENV PORT 8080
+ENV PORT=8080
 EXPOSE 8080
 
 CMD [ "npm","run","start:prd" ]
-# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl
