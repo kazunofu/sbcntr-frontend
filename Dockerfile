@@ -11,19 +11,21 @@ RUN apk add --update --no-cache --virtual build-deps \
 
 # Add libvips
 RUN apk add --upgrade --no-cache vips-dev build-base --repository https://alpine.global.ssl.fastly.net/alpine/v3.10/community/
-COPY . .
 
-# install production dependencies
-RUN yarn install --pure-lockfile --production
+# yarn.lock と package.json だけ先にコピーしてキャッシュを活用する
+COPY package.json yarn.lock ./
+
+# install all dependencies including devDependencies
+RUN yarn install --pure-lockfile
+
+COPY . .
 
 # Note also that prisma generate is automatically invoked when you're installing the @prisma/client npm package
 RUN npx prisma generate
 
-# Save production depenencies installed so we can later copy them in the production image
-RUN cp -R node_modules /tmp/node_modules
+# Save production dependencies installed so we can later copy them in the production image
+RUN yarn install --pure-lockfile --production && cp -R node_modules /tmp/node_modules
 
-# install all dependencies including devDependencies
-RUN yarn install --pure-lockfile
 RUN yarn build
 
 ###########
