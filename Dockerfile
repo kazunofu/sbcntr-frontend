@@ -1,5 +1,5 @@
 FROM node:14.16.0-alpine3.13 AS builder
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat gcompat
 WORKDIR /app
 RUN apk add --update --no-cache --virtual build-deps \
     python3 \
